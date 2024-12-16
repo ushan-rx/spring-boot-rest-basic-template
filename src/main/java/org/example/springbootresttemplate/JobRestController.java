@@ -4,6 +4,8 @@ import org.example.springbootresttemplate.model.JobPost;
 import org.example.springbootresttemplate.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,18 +20,20 @@ public class JobRestController {
 
 //    @ResponseBody     -    when using normal controller
     @GetMapping(path = "jobPosts", produces = {"application/json"})
-    public List<JobPost> getAllJobs(){
-        return service.getAllJobs();
+    public ResponseEntity<List<JobPost>> getAllJobs(){
+        List<JobPost> jobs = service.getAllJobs();
+        return jobs.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(jobs, HttpStatus.OK);
     }
 
     @GetMapping("jobPost/{postId}")
-    public JobPost getJob(@PathVariable("postId") int postId){
-        return service.getJob(postId);
+    public ResponseEntity<JobPost> getJob(@PathVariable("postId") int postId){
+        JobPost job = service.getJob(postId);
+        return job.getPostId() < 0 ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(job, HttpStatus.OK);
     }
 
     @GetMapping("jobPosts/keyword/{keyword}")
-    public List<JobPost> searchByKeyword(@PathVariable("keyword") String keyword){
-        return service.search(keyword);
+    public ResponseEntity<List<JobPost>> searchByKeyword(@PathVariable("keyword") String keyword){
+        return new ResponseEntity<>(service.search(keyword), HttpStatus.OK);
     }
 
     @PostMapping(path ="jobPost", consumes = {"application/json"})

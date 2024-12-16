@@ -24,7 +24,7 @@ public class JobService {
     }
 
     public JobPost getJob(int postId) {
-        return repo.findById(postId).orElse(new JobPost());
+        return repo.findById(postId).orElse(new JobPost(-1));
     }
 
     public void updateJob(JobPost jobpost) {
